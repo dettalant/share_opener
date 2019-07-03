@@ -1,0 +1,20 @@
+{
+  "name": "share_opener",
+  "version": "1.0.0",
+  "main": "share_opener.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "yarn run build:development && yarn run build:production",
+    "build:development": "rollup -c",
+    "build:production": "NODE_ENV=production rollup -c"
+  },
+  "devDependencies": {
+    "@types/google.analytics": "^0.0.40",
+    "rollup": "^1.16.4",
+    "rollup-plugin-buble": "^0.19.8",
+    "rollup-plugin-typescript2": "^0.21.2",
+    "rollup-plugin-uglify": "^6.0.2",
+    "typescript": "^3.5.2"
+  }
+}

@@ -28,10 +28,10 @@ var share_opener = (function (exports) {
       ga("send", "event", this.gaArgs.category, this.gaArgs.action, url, 1);
   };
   /**
-   * 新しい子ウィンドウでシェアURL先のページを開く
-   * @param  args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
+   * window.open()を用いて子ウィンドウを展開する
+   * @param args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
    */
-  ShareOpener.prototype.open = function open (args) {
+  ShareOpener.prototype.childWindowOpen = function childWindowOpen (args) {
       var features = "personalbar=0, toolbar=0, scrollbars=1, sizable=1";
       var screen_w = window.screen.width;
       var screen_h = window.screen.height;
@@ -55,10 +55,18 @@ var share_opener = (function (exports) {
       }
       // 子ウィンドウ縦幅を指定
       features += ", height=" + args.height;
-      // google analyticsへのイベントトラッキング送信を試みる
-      this.sendAnalyticsTracking(args.url);
       // 子ウィンドウを開く
       window.open(args.url, args.windowName, features);
+  };
+  /**
+   * 子ウィンドウを開くシェアボタンがクリックされた際に呼びされる関数
+   * @param args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
+   */
+  ShareOpener.prototype.open = function open (args) {
+      // google analyticsへのイベントトラッキング送信を試みる
+      this.sendAnalyticsTracking(args.url);
+      // どうもwindow.openのタイミング的にエラーがでてるようなので分離
+      this.childWindowOpen(args);
   };
 
   exports.ShareOpener = ShareOpener;

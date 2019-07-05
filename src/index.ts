@@ -57,10 +57,10 @@ export class ShareOpener {
   }
 
   /**
-   * 新しい子ウィンドウでシェアURL先のページを開く
-   * @param  args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
+   * window.open()を用いて子ウィンドウを展開する
+   * @param args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
    */
-  public open(args: ChildWindowArgs) {
+  childWindowOpen(args: ChildWindowArgs) {
     let features = "personalbar=0, toolbar=0, scrollbars=1, sizable=1";
     const screen_w = window.screen.width;
     const screen_h = window.screen.height;
@@ -87,10 +87,19 @@ export class ShareOpener {
     // 子ウィンドウ縦幅を指定
     features += ", height=" + args.height;
 
+    // 子ウィンドウを開く
+    window.open(args.url, args.windowName, features);
+  }
+
+  /**
+   * 子ウィンドウを開くシェアボタンがクリックされた際に呼びされる関数
+   * @param args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
+   */
+  public open(args: ChildWindowArgs) {
     // google analyticsへのイベントトラッキング送信を試みる
     this.sendAnalyticsTracking(args.url);
 
-    // 子ウィンドウを開く
-    window.open(args.url, args.windowName, features);
+    // どうもwindow.openのタイミング的にエラーがでてるようなので分離
+    this.childWindowOpen(args);
   }
 }

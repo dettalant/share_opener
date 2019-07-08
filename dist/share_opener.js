@@ -1,3 +1,11 @@
+/*!
+ * @file share_opener.js
+ * See {@link https://github.com/dettalant/share_opener}
+ *
+ * @author dettalant
+ * @version v0.1.0
+ * @license MIT License
+ */
 var share_opener = (function (exports) {
   'use strict';
 

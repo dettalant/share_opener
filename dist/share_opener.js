@@ -59,7 +59,7 @@ var share_opener = (function (exports) {
    * @param  url シェアボタンのリンク先 `this.href`を指定してもらうことを想定
    */
   ShareOpener.prototype.sendAnalyticsTracking = function sendAnalyticsTracking (url, callback) {
-      if (!this.gaArgs.isTracking) {
+      if (ga === undefined || !this.gaArgs.isTracking) {
           // 初期設定でevent trackingを無効化している際の処理
           if (callback !== undefined) {
               // callback funcitonがあるならそれを呼び出して処理を継続
@@ -138,7 +138,7 @@ var share_opener = (function (exports) {
   ShareOpener.prototype.open = function open (args) {
           var this$1 = this;
 
-      if (!this.gaArgs.isTracking) {
+      if (ga === undefined || !this.gaArgs.isTracking) {
           this.childWindowOpen(args);
           return;
       }

@@ -46,3 +46,18 @@ IIFE型の古臭いやつなので、呼び出しも古臭く`<body>`終わり�
   onclick="shareOpener.sendAnalyticsTracking(this.href);">
 
 ```
+
+## 初期化引数
+
+|引数|機能: 初期値|
+|`isTracking`|Event Tracking機能を有効にするか否か: true|
+|`customTrackerName`|独自のTracker Nameを指定している場合はこれを指定する: ""|
+|`category`|event trackingのカテゴリ名|
+|`action`|event trackingのアクション名|
+
+使用例
+
+```javascript
+// event trackingを無効化
+const shareOpener = new share_opener.ShareOpener({isTracking: false})
+```

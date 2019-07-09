@@ -94,7 +94,7 @@ export class ShareOpener {
    * @param  url シェアボタンのリンク先 `this.href`を指定してもらうことを想定
    */
   public sendAnalyticsTracking(url: string, callback?: Function) {
-    if (!this.gaArgs.isTracking) {
+    if (ga === undefined || !this.gaArgs.isTracking) {
       // 初期設定でevent trackingを無効化している際の処理
 
       if (callback !== undefined) {
@@ -183,7 +183,7 @@ export class ShareOpener {
    * @param args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
    */
   public open(args: ChildWindowArgs) {
-    if (!this.gaArgs.isTracking) {
+    if (ga === undefined || !this.gaArgs.isTracking) {
       this.childWindowOpen(args);
       return;
     }

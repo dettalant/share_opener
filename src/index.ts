@@ -17,7 +17,14 @@ interface ChildWindowArgs {
  * google analyticsのイベントトラッキング用に送信するデータ
  */
 interface GAArgs {
+  // これをfalseにするとevent trackingが無効化される
+  isTracking?: boolean;
+  // 独自のtracker nameを用いたい場合に指定する
+  // 空欄ならdefault trackerを使用する
+  customTrackerName?: string;
+  // event trackingのカテゴリ設定
   category: string;
+  // event trackingのアクション設定
   action: string;
 }
 
@@ -35,25 +42,105 @@ export class ShareOpener {
       // 引数が指定されてないなら初期値を設定
       gaArgs = {
         category: "share_button",
-        action: "click"
+        action: "click",
+        isTracking: true,
       }
     }
 
+    // 何かしらの値は入っている場合の処理
+    if (gaArgs.category === undefined) {
+      gaArgs.category = "share_button";
+    }
+
+    if (gaArgs.action === undefined) {
+      gaArgs.action = "click";
+    }
+
+    // isTrackingの値が省略されていれば有効化
+    if (gaArgs.isTracking === undefined) {
+      gaArgs.isTracking = true;
+    }
+
     this.gaArgs = gaArgs;
+  }
+
+
+  /**
+   * customTrackerNameか"t0"でtrackerを取得できるかテスト
+   * @param  gaArgs [description]
+   * @return        [description]
+   */
+  isTrackerPossibleRetrieve(gaArgs: GAArgs): boolean {
+    // この関数が呼び出された時点（シェアボタンが押された時）で
+    // google analyticsの読み込みが完了していないなら早期リターン
+    // もちろんのことながら、google analyticsを使用していない場合もこれに同じ
+    if (ga === undefined) {
+      return false;
+    }
+
+    let trackerName: string = "t0";
+    if (gaArgs.customTrackerName !==　undefined &&
+      gaArgs.customTrackerName !== "")
+    {
+      trackerName = gaArgs.customTrackerName;
+    }
+
+    const tracker = ga.getByName(trackerName);
+    return tracker !== undefined;
   }
 
   /**
    * google analyticsへとイベントトラッキングデータを送信する
    * @param  url シェアボタンのリンク先 `this.href`を指定してもらうことを想定
    */
-  public sendAnalyticsTracking(url: string) {
-    // この関数が呼び出された時点（シェアボタンが押された時）で
-    // google analyticsの読み込みが完了していないなら早期リターン
-    // もちろんのことながら、google analyticsを使用していない場合もこれに同じ
-    if (typeof ga === "undefined") {
+  public sendAnalyticsTracking(url: string, callback?: Function) {
+    if (!this.gaArgs.isTracking) {
+      // 初期設定でevent trackingを無効化している際の処理
+
+      if (callback !== undefined) {
+        // callback funcitonがあるならそれを呼び出して処理を継続
+        callback();
+      }
+
       return;
     }
-    ga("send", "event", this.gaArgs.category, this.gaArgs.action, url, 1);
+
+    let tracker: UniversalAnalytics.Tracker;
+    // custom tracker nameが指定されているなら、
+    // それを用いた処理に変更
+    if (this.gaArgs.customTrackerName !==　undefined &&
+      this.gaArgs.customTrackerName !== "")
+    {
+      tracker = ga.getByName(this.gaArgs.customTrackerName);
+    } else {
+      // custom tracker nameが指定されていないなら
+      // ga.getAll()での配列0番をdefault tracker扱いにする
+      //
+      // わざわざこんな処理にしているのは、
+      // gtm使用時は"t0"でデフォルトトラッカーを取れないため。
+      tracker = ga.getAll()[0];
+    }
+
+    if (tracker === undefined) {
+      // trackerを取得できなければそこで関数を終える
+
+      if (callback !== undefined) {
+        // callback funcitonがあるならそれを呼び出して処理を継続
+        callback();
+      }
+
+      return;
+    }
+
+    tracker.send("event", {
+      eventCategory: this.gaArgs.category,
+      eventAction: this.gaArgs.action,
+      eventLabel: url,
+      eventValue: 1,
+      transport: "beacon",
+      nonInteraction: true,
+      hitCallback: callback,
+    })
   }
 
   /**
@@ -96,10 +183,13 @@ export class ShareOpener {
    * @param args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
    */
   public open(args: ChildWindowArgs) {
-    // google analyticsへのイベントトラッキング送信を試みる
-    this.sendAnalyticsTracking(args.url);
+    if (!this.gaArgs.isTracking) {
+      this.childWindowOpen(args);
+      return;
+    }
 
-    // どうもwindow.openのタイミング的にエラーがでてるようなので分離
-    this.childWindowOpen(args);
+    this.sendAnalyticsTracking(args.url, () => {
+      this.childWindowOpen(args);
+    })
   }
 }

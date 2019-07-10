@@ -38,7 +38,7 @@ export class ShareOpener {
    * @param gaArgs google analyticsイベントトラッキングに使用するラベル名。入力がなければ初期値を設定する
    */
   constructor(gaArgs?: GAArgs) {
-    if (gaArgs === undefined) {
+    if (typeof gaArgs === "undefined") {
       // 引数が指定されてないなら初期値を設定
       gaArgs = {
         category: "share_button",
@@ -48,16 +48,16 @@ export class ShareOpener {
     }
 
     // 何かしらの値は入っている場合の処理
-    if (gaArgs.category === undefined) {
+    if (typeof gaArgs.category === "undefined") {
       gaArgs.category = "share_button";
     }
 
-    if (gaArgs.action === undefined) {
+    if (typeof gaArgs.action === "undefined") {
       gaArgs.action = "click";
     }
 
     // isTrackingの値が省略されていれば有効化
-    if (gaArgs.isTracking === undefined) {
+    if (typeof gaArgs.isTracking === "undefined") {
       gaArgs.isTracking = true;
     }
 
@@ -74,19 +74,19 @@ export class ShareOpener {
     // この関数が呼び出された時点（シェアボタンが押された時）で
     // google analyticsの読み込みが完了していないなら早期リターン
     // もちろんのことながら、google analyticsを使用していない場合もこれに同じ
-    if (ga === undefined) {
+    if (typeof ga === "undefined") {
       return false;
     }
 
     let trackerName: string = "t0";
-    if (gaArgs.customTrackerName !==　undefined &&
+    if (typeof gaArgs.customTrackerName !==　"undefined" &&
       gaArgs.customTrackerName !== "")
     {
       trackerName = gaArgs.customTrackerName;
     }
 
     const tracker = ga.getByName(trackerName);
-    return tracker !== undefined;
+    return typeof tracker !== "undefined";
   }
 
   /**
@@ -94,10 +94,10 @@ export class ShareOpener {
    * @param  url シェアボタンのリンク先 `this.href`を指定してもらうことを想定
    */
   public sendAnalyticsTracking(url: string, callback?: Function) {
-    if (ga === undefined || !this.gaArgs.isTracking) {
+    if (typeof ga === "undefined" || !this.gaArgs.isTracking) {
       // 初期設定でevent trackingを無効化している際の処理
 
-      if (callback !== undefined) {
+      if (typeof callback !== "undefined") {
         // callback funcitonがあるならそれを呼び出して処理を継続
         callback();
       }
@@ -108,7 +108,7 @@ export class ShareOpener {
     let tracker: UniversalAnalytics.Tracker;
     // custom tracker nameが指定されているなら、
     // それを用いた処理に変更
-    if (this.gaArgs.customTrackerName !==　undefined &&
+    if (typeof this.gaArgs.customTrackerName !==　"undefined" &&
       this.gaArgs.customTrackerName !== "")
     {
       tracker = ga.getByName(this.gaArgs.customTrackerName);
@@ -121,10 +121,10 @@ export class ShareOpener {
       tracker = ga.getAll()[0];
     }
 
-    if (tracker === undefined) {
+    if (typeof tracker === "undefined") {
       // trackerを取得できなければそこで関数を終える
 
-      if (callback !== undefined) {
+      if (typeof callback !== "undefined") {
         // callback funcitonがあるならそれを呼び出して処理を継続
         callback();
       }
@@ -183,7 +183,7 @@ export class ShareOpener {
    * @param args 子ウィンドウ展開に関わるデータ。ChildWindowArgsの説明を参照。
    */
   public open(args: ChildWindowArgs) {
-    if (ga === undefined || !this.gaArgs.isTracking) {
+    if (typeof ga === "undefined" || !this.gaArgs.isTracking) {
       this.childWindowOpen(args);
       return;
     }

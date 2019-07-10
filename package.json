@@ -1,6 +1,6 @@
 {
   "name": "share_opener",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "share_opener.js",
   "license": "MIT",
   "private": true,

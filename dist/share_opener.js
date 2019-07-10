@@ -3,7 +3,7 @@
  * See {@link https://github.com/dettalant/share_opener}
  *
  * @author dettalant
- * @version v0.1.2
+ * @version v0.1.3
  * @license MIT License
  */
 var share_opener = (function (exports) {
@@ -13,7 +13,7 @@ var share_opener = (function (exports) {
    * シェアボタン管理に用いられるクラス
    */
   var ShareOpener = function ShareOpener(gaArgs) {
-      if (gaArgs === undefined) {
+      if (typeof gaArgs === "undefined") {
           // 引数が指定されてないなら初期値を設定
           gaArgs = {
               category: "share_button",
@@ -22,14 +22,14 @@ var share_opener = (function (exports) {
           };
       }
       // 何かしらの値は入っている場合の処理
-      if (gaArgs.category === undefined) {
+      if (typeof gaArgs.category === "undefined") {
           gaArgs.category = "share_button";
       }
-      if (gaArgs.action === undefined) {
+      if (typeof gaArgs.action === "undefined") {
           gaArgs.action = "click";
       }
       // isTrackingの値が省略されていれば有効化
-      if (gaArgs.isTracking === undefined) {
+      if (typeof gaArgs.isTracking === "undefined") {
           gaArgs.isTracking = true;
       }
       this.gaArgs = gaArgs;
@@ -43,25 +43,25 @@ var share_opener = (function (exports) {
       // この関数が呼び出された時点（シェアボタンが押された時）で
       // google analyticsの読み込みが完了していないなら早期リターン
       // もちろんのことながら、google analyticsを使用していない場合もこれに同じ
-      if (ga === undefined) {
+      if (typeof ga === "undefined") {
           return false;
       }
       var trackerName = "t0";
-      if (gaArgs.customTrackerName !== undefined &&
+      if (typeof gaArgs.customTrackerName !== "undefined" &&
           gaArgs.customTrackerName !== "") {
           trackerName = gaArgs.customTrackerName;
       }
       var tracker = ga.getByName(trackerName);
-      return tracker !== undefined;
+      return typeof tracker !== "undefined";
   };
   /**
    * google analyticsへとイベントトラッキングデータを送信する
    * @param  url シェアボタンのリンク先 `this.href`を指定してもらうことを想定
    */
   ShareOpener.prototype.sendAnalyticsTracking = function sendAnalyticsTracking (url, callback) {
-      if (ga === undefined || !this.gaArgs.isTracking) {
+      if (typeof ga === "undefined" || !this.gaArgs.isTracking) {
           // 初期設定でevent trackingを無効化している際の処理
-          if (callback !== undefined) {
+          if (typeof callback !== "undefined") {
               // callback funcitonがあるならそれを呼び出して処理を継続
               callback();
           }
@@ -70,7 +70,7 @@ var share_opener = (function (exports) {
       var tracker;
       // custom tracker nameが指定されているなら、
       // それを用いた処理に変更
-      if (this.gaArgs.customTrackerName !== undefined &&
+      if (typeof this.gaArgs.customTrackerName !== "undefined" &&
           this.gaArgs.customTrackerName !== "") {
           tracker = ga.getByName(this.gaArgs.customTrackerName);
       }
@@ -82,9 +82,9 @@ var share_opener = (function (exports) {
           // gtm使用時は"t0"でデフォルトトラッカーを取れないため。
           tracker = ga.getAll()[0];
       }
-      if (tracker === undefined) {
+      if (typeof tracker === "undefined") {
           // trackerを取得できなければそこで関数を終える
-          if (callback !== undefined) {
+          if (typeof callback !== "undefined") {
               // callback funcitonがあるならそれを呼び出して処理を継続
               callback();
           }
@@ -138,7 +138,7 @@ var share_opener = (function (exports) {
   ShareOpener.prototype.open = function open (args) {
           var this$1 = this;
 
-      if (ga === undefined || !this.gaArgs.isTracking) {
+      if (typeof ga === "undefined" || !this.gaArgs.isTracking) {
           this.childWindowOpen(args);
           return;
       }

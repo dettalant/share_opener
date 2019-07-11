@@ -1,5 +1,5 @@
 /*!
- * @file share_opener.js
+ *   share_opener.js
  * See {@link https://github.com/dettalant/share_opener}
  *
  * @author dettalant
